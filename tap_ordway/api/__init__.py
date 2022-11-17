@@ -1,1 +1,1 @@
-from .base import RequestHandler
+from .base import RequestHandler, PaymentMethodsRequestHandler

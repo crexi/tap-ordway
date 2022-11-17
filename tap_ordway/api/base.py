@@ -169,7 +169,41 @@ class RequestHandler:
             for result in results:
                 yield result
 
+            # if endpoint contains "payment_methods":
+            #     self._exhausted = True
+
             if len(results) == 0:
                 self._exhausted = True
             else:
                 default_params["page"] += 1
+
+
+class PaymentMethodsRequestHandler(RequestHandler):
+    def __init__(
+        self,
+        endpoint_template: str,
+        page_size: int = 50,
+        sort: Optional[str] = None,
+    ):
+        super().__init__(endpoint_template, page_size, sort)
+
+    def fetch(self, context: "DataContext") -> Generator[Dict[str, Any], None, None]:
+        """ Fetches all pages constrained by `resolve_params` """
+
+        default_params: "_DEFAULT_QUERY_PARAMS" = {
+            "sort": self.sort,
+            "size": self.page_size,
+            "page": 1,
+        }
+        default_params.update(self.resolve_params(context))  # type: ignore
+
+        endpoint = self.resolve_endpoint(context)
+
+        with http_request_timer(endpoint=endpoint):
+            results = self._get(endpoint, default_params)
+
+        if isinstance(results, dict):
+            results = [results]
+
+        for result in results:
+            yield result

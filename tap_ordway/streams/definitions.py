@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Dict, Sequence, Type, Union
 from singer import get_logger
-from ..api import RequestHandler
+from ..api import RequestHandler, PaymentMethodsRequestHandler
 from ..transformers import (
     BillingScheduleTransformer,
     CustomerTransformer,
@@ -79,7 +79,7 @@ class PaymentMethods(EndpointSubstream):
     valid_replication_keys: Sequence[str] = []
     replication_key = None
     replication_method = "FULL_TABLE"
-    request_handler = RequestHandler("/customers/{id}/payment_methods")
+    request_handler = PaymentMethodsRequestHandler("/customers/{id}/payment_methods")
     transformer_class = RecordTransformer
 
 
